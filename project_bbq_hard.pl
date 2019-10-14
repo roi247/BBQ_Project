@@ -10,7 +10,8 @@
 % EmptyBoard = b(6,[[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]), print_board(EmptyBoard).
 
 % IndexBoard = b(6,[[1/1,1/2,1/3,1/4,1/5,1/6],[2/1,2/2,2/3,2/4,2/5,2/6],[3/1,3/2,3/3,3/4,3/5,3/6],[4/1,4/2,4/3,4/4,4/5,4/6],[5/1,5/2,5/3,5/4,5/5,5/6],[6/1,6/2,6/3,6/4,6/5,6/6]]), print_board(IndexBoard).
-% ExampleBoard = b(6,[[b,b,n,b,n,n],[b,n,n,b,n,n],[b,n,n,b,n,n],[n,n,n,n,q,q],[q,n,n,b,n,q],[n,n,q,n,n,q]]), print_board(ExampleBoard).
+% IndexBoard = b(6,[[a/1,1/2,1/3,1/4,1/5,1/6],[a/1,2/2,2/3,2/4,2/5,2/6],[a/1,3/2,3/3,3/4,3/5,3/6],[a/1,4/2,4/3,4/4,4/5,4/6],[a/1,5/2,5/3,5/4,5/5,5/6],[a/1,6/2,6/3,6/4,6/5,6/6]]), print_board(IndexBoard).
+% 	
 
 % ExampleBoard = b(6,[[n,n,n,b,n,n],[n,n,n,b,n,n],[b,n,n,n,n,n],[n,n,n,n,q,q],[q,n,n,b,n,n],[n,n,q,n,n,n]]),
 % ExampleBoard = b(6,[[b,b,n,b,n,n],[b,n,n,b,n,n],[b,n,n,b,n,n],[n,n,n,n,q,q],[q,n,n,b,n,q],[n,n,q,n,n,q]]),
@@ -39,6 +40,17 @@ test(NewBoard) :-
 	ExampleBoard = b(6,[[n,n,n,b,n,n],[n,n,n,b,n,n],[b,n,n,n,n,n],[n,n,n,n,q,q],[q,n,n,b,n,n],[n,n,q,n,n,n]]),
 	print_board(ExampleBoard),nl,nl,nl,
 	place_in_board(ExampleBoard, b, NewBoard), print_board(NewBoard).
+
+test2 :-
+	ExampleBoard = b(6,[[b,b,n,b,n,n],[b,n,n,b,n,n],[b,n,n,b,n,n],[n,n,n,n,q,q],[q,n,n,b,n,q],[n,n,q,n,n,q]]),
+	print_board(ExampleBoard).
+
+
+test3(Sign, Index, NB) :-
+	ExampleBoard = b(6,[[b,b,n,b,n,n],[b,n,n,b,n,n],[b,n,n,b,n,n],[n,n,n,n,q,q],[q,n,n,b,n,q],[n,n,q,n,n,q]]), 
+	print_board(ExampleBoard),nl,nl,
+	place_in_board_index(ExampleBoard, Sign, Index, NB), print_board(NB).
+
 
 % ------------------------
 % Board Format :
@@ -75,21 +87,23 @@ max(A, B, B) :-
 % Summary  - prints a the game board in the UI format
 % ---------------------------------------------------------------------------------- 
 print_board(Board) :-
-	print_all_board(Board),!.
+	print_all_board(Board, 1),!.
 
-print_all_board(b(Size, Rows)) :-
+print_all_board(b(Size, Rows), LineIndex) :-
 	print_border_line_seperator(Size),nl,!,
-	print_board_rest(b(Size, Rows)).
+	print_board_rest(b(Size, Rows), LineIndex),
+	print_columns_index_marks.
 
-print_board_rest(b(Size, [])) :- 
+print_board_rest(b(Size, []), _) :- 
 	print_border_line_seperator(Size),nl,!.
 
-print_board_rest(b(Size, [Row|OtherRows])) :-
+print_board_rest(b(Size, [Row|OtherRows]), LineIndex) :-
 	Size > 0,
 	write('|'),!,
-	print_row(Row),nl,
+	print_row(Row), write('     <-- '), write(LineIndex),nl,
+	LineIndex1 is LineIndex + 1,
 	(OtherRows = [] ; print_line_seperator(Size),nl),
-	print_board_rest(b(Size, OtherRows)).
+	print_board_rest(b(Size, OtherRows),LineIndex1).
 
 
 
@@ -119,7 +133,9 @@ print_var(X/Y) :-
 	write(Y),!.
 
 print_var(Var) :- 
-	write(Var),!.
+	write(' '),
+	write(Var),
+	write(' '),!.
 
 % ---------------------------------------------------------------------------------- 
 % Predicate- print_line_seperator
@@ -157,6 +173,14 @@ print_border_line_seperator_rest(Size) :-
 	print_border_line_seperator_rest(Size1).
 
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- print_columns_index_marks
+% Summary  - prints the columns indexes signs
+% ---------------------------------------------------------------------------------- 
+print_columns_index_marks :-
+     	write(' /\  /\  /\  /\  /\  /\ '),nl,
+	write(' |   |   |   |   |   | '),nl,
+	write(' a   b   c   d   e   f '),nl,!. 
 
 
 
@@ -260,15 +284,9 @@ max_continuous_vars_in_row([V|RowRest], Var, LastVar, CurrentCount, CurrentMaxCo
 
 
 
-
-
-
-
-
-
 % ---------------------------------------------------------------------------------- 
-% Predicate- 
-% Summary  - 
+% Predicate- place_in_board
+% Summary  - Places the given sign in a free spot in the board
 % ---------------------------------------------------------------------------------- 
 place_in_board(Board, Sign, NewBoard) :-
 	(Sign = q ; Sign = b),
@@ -284,10 +302,55 @@ place_in_board(Board, Sign, NewBoard) :-
 	NewBoard = b(Size, NewBoardRows).
 
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- place_in_board_index
+% Summary  - Places the given sign in the given index column/row
+% ---------------------------------------------------------------------------------- 
+place_in_board_index(Board, Sign, Index, NewBoard) :-
+
+	% Validate Board, Sign, Index
+	Board = b(Size, Rows),
+	(Sign = q ; Sign = b),
+	
+	Index = C/R,
+	(integer(R), atom(C),!,
+	name(C, [CAscii]),
+	ColIndex is CAscii - 96,
+	RowIndex is R
+	;
+	integer(C), atom(R),!,
+	name(R, [RAscii]),
+	ColIndex is RAscii - 96,
+	RowIndex is C
+	),
+
+	RowIndex > 0, RowIndex =< Size,
+	ColIndex > 0, ColIndex =< Size,
+
+	% Take the matching row given in the index
+	% Replace the empty spot with the given var
+	RowIndex1 is RowIndex -1,
+	random_access_list(Rows, RowIndex1 , BerforeRow, Row , AfterRow),
+	replace_in_line(Row, ColIndex, Sign, NewRow),
+
+	% Assemble the new board with the new row inplaced
+	append(BerforeRow, [NewRow], Temp),
+	append(Temp, AfterRow, NewBoardRows),
+	NewBoard = b(Size, NewBoardRows),!.
+	
+	
+	
+
+	
+
+	
+	
+
+
 
 % ---------------------------------------------------------------------------------- 
 % Predicate- replace_in_line
-% Summary  - Place given Sign in all the avialable places in the line
+% Summary  - Place given Sign (b/q) in all the avialable spots in the line
 % ---------------------------------------------------------------------------------- 
 replace_in_line([n,B,C,D,E,F], 1, VarToInplace, [VarToInplace,B,C,D,E,F]).
 replace_in_line([A,n,C,D,E,F], 2, VarToInplace, [A,VarToInplace,C,D,E,F]).
@@ -315,7 +378,23 @@ list_vars(List, BeforeVar, Var, AfterVar) :-
 	AfterVar = P2.
 
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- random_access_list
+% Summary  - random access to list at given index, returns the var at this index, and lists of 
+%		 before and after this var.
+%		 It does that using append(conc) and finding sublists of the given list.
+% ---------------------------------------------------------------------------------- 
+random_access_list(List, Index, BeforeVar, Var, AfterVar) :-
 
+	% Find matching sublists according to the index
+	append(P1, P2, List),
+	append(V1, V2, P1),	
+	length(V2, 1),
+	V2 = [Var],
+	length(V1, Index),
+	BeforeVar = V1,
+	AfterVar = P2,!.
+	
 
 
 
