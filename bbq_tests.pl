@@ -40,7 +40,7 @@ max_line(Cols, q, Q_MaxCol, Q_Max_Col_Count).
 
 
 test1(NewBoard) :-
-	ExampleBoard = b(6,[[n,n,n,b,n,n],[n,n,n,b,n,n],[b,n,n,n,n,n],[n,n,n,n,q,q],[q,n,n,b,n,n],[n,n,q,n,n,n]]),
+	ExampleBoard = b(6,[[b,b,q,b,n,n],[b,b,b,n,q,q],[b,q,q,q,b,n],[n,n,n,n,q,q],[b,b,b,b,q,q],[n,q,q,b,b,q]]),
 	print_board(ExampleBoard),nl,nl,nl,
 	place_in_board(ExampleBoard, b, NewBoard), print_board(NewBoard).
 
@@ -50,12 +50,16 @@ test2 :-
 
 
 test3(Sign, Index, NB) :-
-	ExampleBoard = b(6,[[b,b,n,b,n,n],[b,n,n,b,n,n],[b,n,n,b,n,n],[n,n,n,n,q,q],[q,n,n,b,n,q],[n,n,q,n,n,q]]), 
+	ExampleBoard = b(6,[[b,b,q,b,n,n],[b,b,b,n,q,q],[b,q,q,q,b,n],[n,n,n,n,q,q],[b,b,b,b,q,q],[n,q,q,b,b,q]]),
 	print_board(ExampleBoard),nl,nl,
 	place_in_board_index(ExampleBoard, Sign, Index, NB), print_board(NB).
 
 
-
+test4(Count) :-
+	%ExampleBoard = b(6,[[b,b,q,b,n,n],[b,b,b,n,q,q],[b,q,q,q,b,n],[n,n,n,n,q,q],[b,b,b,b,q,q],[n,q,q,b,b,q]]),
+	ExampleBoard = b(6,[[n,n,n,b,n,n],[n,n,n,b,n,n],[b,n,n,n,n,n],[n,n,n,n,q,q],[q,n,n,b,n,n],[n,n,q,n,n,n]]),
+	print_board(ExampleBoard),
+	board_empty_spots_left(ExampleBoard, Count).
 
 
 

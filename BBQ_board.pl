@@ -20,7 +20,7 @@
 
 
 % -----------------------------------------------------------------------------------------------------------------
-% 								 Board Manipulating Predicates  						 
+% 								 Board Handling Predicates  						 
 % -----------------------------------------------------------------------------------------------------------------
 
 
@@ -187,11 +187,20 @@ replace_in_line([A,B,C,D,E,n], 6, VarToInplace, [A,B,C,D,E,VarToInplace]).
 
 	
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- board_empty_spots_left
+% Summary  - Counts how many empty spots are left in the board
+% ---------------------------------------------------------------------------------- 
+board_empty_spots_left(b(_, []), 0) :- !.
 
+board_empty_spots_left(b(_, [Row|Rows]), Count) :-
+	board_empty_spots_left(b(_, Rows), Count0),
+	findall(V, (member(V,Row), V = n) , NArray), len(NArray, RowCount),
+	Count is Count0 + RowCount.
 
+	
 
-
-
+	
 
 
 
