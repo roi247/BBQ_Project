@@ -43,12 +43,29 @@ MIN - player_b
 
 
 
-move(Pos, NextPos) :- !.
-	
+opposite_player(player_b, player_q) :- !.
+opposite_player(player_q, player_b) :- !.
+
+
+player_sign(player_b, b) :- !.
+player_sign(player_q, q) :- !.
+
+
+move(Pos, NextPos) :- 
+	Pos = s(Player, Depth, Board),
+	player_sign(Player, Sign),	
+
+	% Place the player sign and retrive the new board with that sign
+	place_in_board(Board, Sign, NewBoard),
+
+	% Construct Next Position
+	opposite_player(Player, OppositePlayer),
+	Depth1 is Depth + 1,
+	NextPos = s(OppositePlayer, Depth1 , NewBoard).
 
 
 stop_search(s(_, Depth, Board)) :- 
-	(Depth > 1 ; board_empty_spots_left(Board, 0)),!.
+	(Depth >= 1 ; board_empty_spots_left(Board, 0)),!.
 
 
 moves(Pos, PosList):-
@@ -63,7 +80,7 @@ min_to_move(s(player_b,_,_)).
 
 
 % ---------------------------------------------------------------------------------- 
-% Predicate- staticval
+% Predicate- staticval											
 % Summary  - huristic static evaluation function of a given Pos, 				
 %		 would be positive and maximzed for MAX player and netative minimized for MIN player
 %		 The better the Pos for a player - the greater the score is.		 
@@ -72,15 +89,12 @@ min_to_move(s(player_b,_,_)).
 %	For player Q: Factor_Q - Factor_B								
 %	For player B: -(Factor_B - Factor_Q)							
 %														
-%	Factor is the player longest row times the potential maxmimum row that can be achived 
+%	Factor is the player current longest row TIME the potential maxmimum line that can be achived 
 %			 											
 %	Factor_X = PlayerX_longest_line * (PlayerX_longest_line + PlayerX_potential_empty_spots_left)
 %		 												
 %		 												
-% ----------------------------------------------------------------------------------
-
-
-	
+% ----------------------------------------------------------------------------------	
 staticval(Pos, Val):-
 	Pos = s(Player, _, Board),!,
 	Board = b(Size, Rows),

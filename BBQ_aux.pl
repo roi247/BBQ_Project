@@ -92,8 +92,14 @@ find_list_maximum([V|ListRest], MaxVar, MaximumValue) :-
 
 
 
-
-
+% ---------------------------------------------------------------------------------- 
+% Predicate- sleep
+% Summary  - sleep for a given amout of milliseconds
+% ---------------------------------------------------------------------------------- 
+sleep( Milliseconds ) :-
+	ms((repeat,wait(0)), Duration),
+	Duration >= Milliseconds,
+	!.
 
 
 

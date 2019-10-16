@@ -244,7 +244,7 @@ row_potential_spots_suffix(Row, Sign, Count) :-
 	append(SignSequence1, RowSuf, Row),
 	append(RowPref, SignSequence, SignSequence1),
 	
-	count_blank_spots_sequence(RowSuf, Count).
+	count_nonopponent_spots_sequence(RowSuf, Sign, Count).
 
 
 row_potential_spots_prefix(Row, Sign, Count) :-
@@ -255,20 +255,22 @@ row_potential_spots_prefix(Row, Sign, Count) :-
 	append(SignSequence, RowSuf, SignSequence1),
 	
 	reverse(RowPref, RowPrefReversed),
-	count_blank_spots_sequence(RowPrefReversed, Count).
+	count_nonopponent_spots_sequence(RowPrefReversed, Sign, Count).
 
 
 % ---------------------------------------------------------------------------------- 
-% Predicate- count_blank_spots_sequence
-% Summary  - Counts blank spots (n) untill other sign is encountered
+% Predicate- count_nonopponent_spots_sequence
+% Summary  - Counts non opponent spots (blank spots (n) or same sign spots) untill the opponent 
+%		 sign is encountered
 % ---------------------------------------------------------------------------------- 
-count_blank_spots_sequence([], 0) :- !.
+count_nonopponent_spots_sequence([], _, 0) :- !.
 
-count_blank_spots_sequence([n|Row], Count) :-
-	count_blank_spots_sequence(Row, Count0),!,
+count_nonopponent_spots_sequence([S|Row], Sign, Count) :-
+	(S = Sign ; S = n),!,
+	count_nonopponent_spots_sequence(Row, Sign, Count0),
 	Count is Count0 + 1.
 
-count_blank_spots_sequence([_|Row], 0) :- !.
+count_nonopponent_spots_sequence([_|Row], Sign , 0) :- !.
 
 
 	
