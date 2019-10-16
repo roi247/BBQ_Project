@@ -68,20 +68,21 @@ min_to_move(s(player_b,_,_)).
 %		 would be positive and maximzed for MAX player and netative minimized for MIN player
 %		 The better the Pos for a player - the greater the score is.		 
 %		 												
-%	Huristic function is calculated in this way:
-%	For player Q: Factor_Q - Factor_B
-%	For player B: -(Factor_B - Factor_Q)
+%	Huristic function is calculated in this way:						
+%	For player Q: Factor_Q - Factor_B								
+%	For player B: -(Factor_B - Factor_Q)							
+%														
+%	Factor is the player longest row times the potential maxmimum row that can be achived 
+%			 											
+%	Factor_X = PlayerX_longest_line * (PlayerX_longest_line + PlayerX_potential_empty_spots_left)
 %		 												
-%			 													
-%	Factor_X = Player_X_longest_line * (BoardSize - Player_X_potential_empty_spots_left)
 %		 												
-%		 												
-% ---------------------------------------------------------------------------------- 
+% ----------------------------------------------------------------------------------
 
 
 	
 staticval(Pos, Val):-
-	Pos = s(player_q, _, Board),!,
+	Pos = s(Player, _, Board),!,
 	Board = b(Size, Rows),
 
 	board_longest_line(Board, q, Q_LongestLine, Q_LineLength),
@@ -90,20 +91,14 @@ staticval(Pos, Val):-
 	board_longest_line(Board, b, B_LongestLine, B_LineLength),
 	row_potential_spots_left(B_LongestLine, b, B_SpotsLeftCount),
 
+	Factor_Q is (Q_LineLength * (Q_LineLength + Q_SpotsLeftCount)),
+	Factor_B is (B_LineLength * (B_LineLength + B_SpotsLeftCount)),
 
-	Factor_Q is (Q_LineLength * (Size - Q_SpotsLeftCount)),
-	Factor_B is (B_LineLength * (Size - B_SpotsLeftCount)),
-
-	Val is Factor_Q - Factor_B.
-	
-	% Stopped here !!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@
-		
-	
-
-	
-
-
-
+	(Player = player_q,!,
+	 Val is Factor_Q - Factor_B
+	;
+	Player = player_b,!,
+	 Val is -1 * (Factor_B - Factor_Q)),!.
 
 
 	

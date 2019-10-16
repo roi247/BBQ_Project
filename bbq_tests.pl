@@ -12,6 +12,8 @@ compile_all :-
 % NumsBoard = b(6,[[1,2,3,1,2,9],[4,5,6,4,5,9],[7,8,9,7,8,9],[7,8,9,7,8,9],[7,8,9,7,8,9],[7,8,9,7,8,9]]), print_board(NumsBoard).
 % EmptyBoard = b(6,[[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]), print_board(EmptyBoard).
 
+% Board = b(6,[[b,b,q,n,n,n],[b,n,n,n,b,n],[b,n,n,n,n,n],[b,n,n,n,n,q],[n,n,q,q,q,q],[n,n,n,n,n,n]]), print_board(Board).
+
 % IndexBoard = b(6,[[1/1,1/2,1/3,1/4,1/5,1/6],[2/1,2/2,2/3,2/4,2/5,2/6],[3/1,3/2,3/3,3/4,3/5,3/6],[4/1,4/2,4/3,4/4,4/5,4/6],[5/1,5/2,5/3,5/4,5/5,5/6],[6/1,6/2,6/3,6/4,6/5,6/6]]), print_board(IndexBoard).
 % IndexBoard = b(6,[[a/1,1/2,1/3,1/4,1/5,1/6],[a/1,2/2,2/3,2/4,2/5,2/6],[a/1,3/2,3/3,3/4,3/5,3/6],[a/1,4/2,4/3,4/4,4/5,4/6],[a/1,5/2,5/3,5/4,5/5,5/6],[a/1,6/2,6/3,6/4,6/5,6/6]]), print_board(IndexBoard).
 % 	
@@ -43,6 +45,26 @@ max_line(Cols, b, B_MaxCol, B_Max_Col_Count),
 max_line(Cols, q, Q_MaxCol, Q_Max_Col_Count).
 
 */
+
+
+
+
+
+
+
+/*
+
+Board = b(6,[[b,b,q,n,n,n],[b,n,n,n,b,n],[b,n,n,n,n,n],[b,n,n,n,n,q],[n,n,q,q,q,q],[n,n,n,n,n,n]]), print_board(Board),
+staticval(s(player_q, 1, Board), Val).
+
+
+Board = b(6,[[b,b,q,n,n,n],[b,n,n,n,b,n],[b,n,n,n,n,n],[b,n,n,n,n,q],[q,n,n,q,q,q],[n,n,n,n,n,n]]), print_board(Board),
+staticval(s(player_q, 1, Board), Val).
+
+*/
+
+
+
 
 
 test1(NewBoard) :-

@@ -78,7 +78,7 @@ find_list_maximum([], CurrentMaxVar, CurrentMaxValue, CurrentMaxVar, CurrentMaxV
 
 find_list_maximum([Var|OtherVars], CurrentMaxVar, CurrentMaxValue, AbsuluteMaxVar , AbsuluteMaxValue) :-
 	value(Var, VarValue),
-	VarValue > CurrentMaxValue,!, 	% RED CUT! DONT REMOVE!
+	VarValue >= CurrentMaxValue,!, 	% RED CUT! DONT REMOVE!
 	find_list_maximum(OtherVars, Var, VarValue, AbsuluteMaxVar, AbsuluteMaxValue).
 	
 
@@ -87,8 +87,8 @@ find_list_maximum([Var|OtherVars], CurrentMaxVar, CurrentMaxValue, AbsuluteMaxVa
 
 
 % +++++++ EXTERNAL USE +++++++++
-find_list_maximum(List, MaxVar, MaximumValue) :-
-	find_list_maximum(List,_ , 0, MaxVar, MaximumValue).
+find_list_maximum([V|ListRest], MaxVar, MaximumValue) :-
+	find_list_maximum(ListRest,V , V, MaxVar, MaximumValue).
 
 
 

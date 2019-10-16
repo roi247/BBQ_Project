@@ -235,7 +235,7 @@ row_potential_spots_left(Row, Sign, Count) :-
 	findall(C2, row_potential_spots_prefix(Row, Sign, C2), PrefixCounts),
 
 	append(SuffixCounts, PrefixCounts, CountLists),
-	find_list_maximum(CountLists, Count, _).
+	find_list_maximum(CountLists, _, Count),!.
 
 row_potential_spots_suffix(Row, Sign, Count) :-
 	max_continuous_vars_in_row(Row, Sign, ContinuousSignsCount),
