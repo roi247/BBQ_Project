@@ -43,28 +43,67 @@ MIN - player_b
 
 
 
-game_over(s(_, Depth, Board)) :- 
+move(Pos, NextPos) :- !.
+	
+
+
+stop_search(s(_, Depth, Board)) :- 
 	(Depth > 1 ; board_empty_spots_left(Board, 0)),!.
 
 
-
-
-
-
 moves(Pos, PosList):-
-    ( game_over(Pos), fail;
+    ( stop_search(Pos), fail;
 	  bagof(Pos1,move(Pos,Pos1),PosList)
 	).
 	
 
-max_to_move(s(player_q,_)).
+max_to_move(s(player_q,_,_)).
 
-min_to_move(s(player_b,_)).
+min_to_move(s(player_b,_,_)).
+
+
+% ---------------------------------------------------------------------------------- 
+% Predicate- staticval
+% Summary  - huristic static evaluation function of a given Pos, 				
+%		 would be positive and maximzed for MAX player and netative minimized for MIN player
+%		 The better the Pos for a player - the greater the score is.		 
+%		 												
+%	Huristic function is calculated in this way:
+%	For player Q: Factor_Q - Factor_B
+%	For player B: -(Factor_B - Factor_Q)
+%		 												
+%			 													
+%	Factor_X = Player_X_longest_line * (BoardSize - Player_X_potential_empty_spots_left)
+%		 												
+%		 												
+% ---------------------------------------------------------------------------------- 
+
+
 	
 staticval(Pos, Val):-
-    max_to_move(Pos), Val is -1 .
-staticval(Pos, Val):-
-    min_to_move(Pos), Val is 1 .
+	Pos = s(player_q, _, Board),!,
+	Board = b(Size, Rows),
+
+	board_longest_line(Board, q, Q_LongestLine, Q_LineLength),
+	row_potential_spots_left(Q_LongestLine, q, Q_SpotsLeftCount),
+
+	board_longest_line(Board, b, B_LongestLine, B_LineLength),
+	row_potential_spots_left(B_LongestLine, b, B_SpotsLeftCount),
+
+
+	Factor_Q is (Q_LineLength * (Size - Q_SpotsLeftCount)),
+	Factor_B is (B_LineLength * (Size - B_SpotsLeftCount)),
+
+	Val is Factor_Q - Factor_B.
+	
+	% Stopped here !!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@
+		
+	
+
+	
+
+
+
 
 
 	

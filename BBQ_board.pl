@@ -24,6 +24,32 @@
 % -----------------------------------------------------------------------------------------------------------------
 
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- board_best_line
+% Summary  - finds the maximum continuous sequence of b/q (for row/column) 
+%		 in the entire board , returns the sequence size
+%		 the winner in the game is the one with the longest line (row/column)
+% ---------------------------------------------------------------------------------- 
+board_longest_line(Board, Sign, LongestLine, LineLength) :-
+	(Sign = b ; Sign = q),
+	
+	Board = b(_, Rows),
+	get_board_columns(Board , Columns),
+	
+	max_line(Rows, Sign, MaxRow, MaxRowLength),
+	max_line(Columns, Sign, MaxCol, MaxColLength),
+
+	(MaxRowLength >= MaxColLength,!,
+	LongestLine = MaxRow,
+	LineLength = MaxRowLength
+	;	
+	LongestLine = MaxCol,
+	LineLength = MaxColLength
+	),!.
+	
+	
+
+
 
 % ---------------------------------------------------------------------------------- 
 % Predicate- get_board_columns
@@ -230,9 +256,6 @@ row_potential_spots_prefix(Row, Sign, Count) :-
 	
 	reverse(RowPref, RowPrefReversed),
 	count_blank_spots_sequence(RowPrefReversed, Count).
-
-
-
 
 
 % ---------------------------------------------------------------------------------- 

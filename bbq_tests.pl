@@ -22,6 +22,12 @@ compile_all :-
 % ExampleBoard = b(6,[[b,b,q,b,n,n],[b,b,b,n,q,q],[b,q,q,q,b,n],[n,n,n,n,q,q],[b,b,b,b,q,q],[n,q,q,b,b,q]]),
 
 
+/*
+
+ExampleBoard = b(6,[[b,b,q,b,n,n],[b,b,b,n,q,q],[b,q,q,q,b,n],[n,n,n,n,q,q],[b,b,b,b,q,q],[n,q,q,b,b,q]]),
+board_longest_line(ExampleBoard, b, LL, C), print_board(ExampleBoard).
+
+*/
 
 
 /*
@@ -62,7 +68,8 @@ test4(Count) :-
 	board_empty_spots_left(ExampleBoard, Count).
 
 
-
+test5(Row, Count) :-
+	row_potential_spots_left(Row,b,Count).
 
 
 
