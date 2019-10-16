@@ -45,13 +45,50 @@ random_access_list(List, Index, BeforeVar, Var, AfterVar) :-
 	AfterVar = P2,!.
 
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- list_of_same_var
+% Summary  - True if given list has the same var Len times
+% ---------------------------------------------------------------------------------- 
+list_of_same_var([], Var, 0) :- !.
+
+list_of_same_var([Var|List], Var, Len) :-
+	Len1 is Len - 1,	
+	list_of_same_var(List, Var , Len1).	
+	
 
 
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- Value Relation
+% Summary  - Generic prediacte for getting the value of a list variable 
+% Could be integer, list, etc...
+% ---------------------------------------------------------------------------------- 
+value(Number, Number) :-
+	integer(Number),!.
+
+value(List, Value) :-
+	list(List),
+	sum(List, Value),!.
+
+% ---------------------------------------------------------------------------------- 
+% Predicate- List maximum predicate
+% Summary  - Generic prediacte for achiving list maximum using value predicate
+% ---------------------------------------------------------------------------------- 
+find_list_maximum([], CurrentMaxVar, CurrentMaxValue, CurrentMaxVar, CurrentMaxValue) :- !.
+
+find_list_maximum([Var|OtherVars], CurrentMaxVar, CurrentMaxValue, AbsuluteMaxVar , AbsuluteMaxValue) :-
+	value(Var, VarValue),
+	VarValue > CurrentMaxValue,!, 	% RED CUT! DONT REMOVE!
+	find_list_maximum(OtherVars, Var, VarValue, AbsuluteMaxVar, AbsuluteMaxValue).
+	
+
+find_list_maximum([Var|OtherVars], CurrentMaxVar, CurrentMaxValue, AbsuluteMaxVar, AbsuluteMaxValue) :-
+	find_list_maximum(OtherVars, CurrentMaxVar, CurrentMaxValue, AbsuluteMaxVar, AbsuluteMaxValue).
 
 
-
-
+% +++++++ EXTERNAL USE +++++++++
+find_list_maximum(List, MaxVar, MaximumValue) :-
+	find_list_maximum(List,_ , 0, MaxVar, MaximumValue).
 
 
 

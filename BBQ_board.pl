@@ -200,15 +200,55 @@ board_empty_spots_left(b(_, [Row|Rows]), Count) :-
 
 	
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- row_potential_spots_left
+% Summary  - Counts how many potential empty spots are left in the row
+% ---------------------------------------------------------------------------------- 
+row_potential_spots_left(Row, Sign, Count) :- 
+	findall(C1, row_potential_spots_suffix(Row, Sign, C1), SuffixCounts),
+	findall(C2, row_potential_spots_prefix(Row, Sign, C2), PrefixCounts),
+
+	append(SuffixCounts, PrefixCounts, CountLists),
+	find_list_maximum(CountLists, Count, _).
+
+row_potential_spots_suffix(Row, Sign, Count) :-
+	max_continuous_vars_in_row(Row, Sign, ContinuousSignsCount),
+	list_of_same_var(SignSequence, Sign, ContinuousSignsCount),
+
+	append(SignSequence1, RowSuf, Row),
+	append(RowPref, SignSequence, SignSequence1),
 	
+	count_blank_spots_sequence(RowSuf, Count).
+
+
+row_potential_spots_prefix(Row, Sign, Count) :-
+	max_continuous_vars_in_row(Row, Sign, ContinuousSignsCount),
+	list_of_same_var(SignSequence, Sign, ContinuousSignsCount),
+
+	append(RowPref, SignSequence1, Row),
+	append(SignSequence, RowSuf, SignSequence1),
+	
+	reverse(RowPref, RowPrefReversed),
+	count_blank_spots_sequence(RowPrefReversed, Count).
 
 
 
 
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- count_blank_spots_sequence
+% Summary  - Counts blank spots (n) untill other sign is encountered
+% ---------------------------------------------------------------------------------- 
+count_blank_spots_sequence([], 0) :- !.
+
+count_blank_spots_sequence([n|Row], Count) :-
+	count_blank_spots_sequence(Row, Count0),!,
+	Count is Count0 + 1.
+
+count_blank_spots_sequence([_|Row], 0) :- !.
 
 
-
+	
 
 
 
