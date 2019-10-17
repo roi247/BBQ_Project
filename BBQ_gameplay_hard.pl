@@ -8,9 +8,10 @@ cl :- compile_all,!.
 compile_all :-
 	compile(bbq_aux),
 	compile(bbq_board),
+	compile(bbq_tests),
 
-	compile(bbq_ui),
-	compile(bbq_gameplay_hard).
+	compile(bbq_ui).
+	%compile(bbq_gameplay_hard).
 
 
 % -----------------------------------------------------------------------------------------------------------------
@@ -56,12 +57,13 @@ move(Pos, NextPos) :-
 	player_sign(Player, Sign),	
 
 	% Place the player sign and retrive the new board with that sign
-	place_in_board(Board, Sign, NewBoard),
+	place_in_board(Board, Sign, NewBoard1),
+	%place_in_board(NewBoard0, Sign, NewBoard1),
 
 	% Construct Next Position
 	opposite_player(Player, OppositePlayer),
 	Depth1 is Depth + 1,
-	NextPos = s(OppositePlayer, Depth1 , NewBoard).
+	NextPos = s(OppositePlayer, Depth1 , NewBoard1).
 
 
 stop_search(s(_, Depth, Board)) :- 
@@ -69,32 +71,31 @@ stop_search(s(_, Depth, Board)) :-
 
 
 moves(Pos, PosList):-
-    ( stop_search(Pos), fail;
-	  bagof(Pos1,move(Pos,Pos1),PosList)
-	).
-	
+	not(stop_search(Pos)),
+	bagof(Pos1, move(Pos,Pos1), PosList).
+
 
 max_to_move(s(player_q,_,_)).
 
 min_to_move(s(player_b,_,_)).
 
 
-% ---------------------------------------------------------------------------------- 
-% Predicate- staticval											
-% Summary  - huristic static evaluation function of a given Pos, 				
+% ---------------------------------------------------------------------------------- 		
+% Predicate- staticval													
+% Summary  - huristic static evaluation function of a given Pos, 						
 %		 would be positive and maximzed for MAX player and netative minimized for MIN player
-%		 The better the Pos for a player - the greater the score is.		 
-%		 												
-%	Huristic function is calculated in this way:						
-%	For player Q: Factor_Q - Factor_B								
-%	For player B: -(Factor_B - Factor_Q)							
-%														
+%		 The better the Pos for a player - the greater the score is.		 		
+%		 														
+%	Huristic function is calculated in this way:								
+%	For player Q: Factor_Q - Factor_B										
+%	For player B: -(Factor_B - Factor_Q)									
+%																
 %	Factor is the player current longest row TIME the potential maxmimum line that can be achived 
-%			 											
+%			 													
 %	Factor_X = PlayerX_longest_line * (PlayerX_longest_line + PlayerX_potential_empty_spots_left)
-%		 												
-%		 												
-% ----------------------------------------------------------------------------------	
+%		 														
+%		 														
+% ----------------------------------------------------------------------------------		
 staticval(Pos, Val):-
 	Pos = s(Player, _, Board),!,
 	Board = b(Size, Rows),

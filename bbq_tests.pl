@@ -110,13 +110,26 @@ test5(Row, Count) :-
 	row_potential_spots_left(Row,b,Count).
 
 
+test6(GoodPos, Value) :-
+	%Board = b(6,[[b,b,q,n,n,n],[b,n,n,n,b,n],[b,n,n,n,n,n],[n,n,n,n,n,q],[n,n,n,q,q,q],[n,n,n,n,n,n]]),
+	%Board = b(6,[[b,b,q,n,n,n],[b,n,n,n,b,n],[b,n,n,n,n,n],[b,n,n,n,n,q],[n,n,q,q,q,q],[n,n,n,n,n,n]]),
+	
+	Board = b(6,[[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]),
+
+	Pos = s(player_q, 0, Board),
+	alphabeta(Pos, -999, 999, GoodPos, Value),
+
+	print_board(Board),nl,nl,nl,
+	print_positions([GoodPos]).
+
+
 print_positions([]) :- !.
 
 print_positions([Pos|OtherPositions]) :-
 	Pos = s(Player, Dep, Board),!,
 	print_board(Board),
-	print_positions(OtherPositions),
-	sleep(500).
+	print_positions(OtherPositions).
+	%sleep(500).
 
 
 
@@ -124,7 +137,7 @@ print_positions([Pos|OtherPositions]) :-
 		------------- Move Tests ----------------
 
 Board = b(6,[[b,b,q,n,n,n],[b,n,n,n,b,n],[b,n,n,n,n,n],[n,n,n,n,n,q],[n,n,n,q,q,q],[n,n,n,n,n,n]]),
-Pos = s(player_q, 0, Board), move(Pos, NextPos), NextPos = s(_,Dep, NB), staticval(NextPos, Value), print_board(NB).
+Pos = s(player_q, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([NextPos]).
 
 
 
