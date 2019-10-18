@@ -2,6 +2,18 @@
 % 								 UI Predicates  								 
 % -----------------------------------------------------------------------------------------------------------------
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- compile_all
+% Summary  - compiles all the neccesery files for the game
+% ---------------------------------------------------------------------------------- 
+cl :- compile_all,!.
+
+compile_all :-
+	compile(bbq_aux),
+	compile(bbq_tests),
+	compile(bbq_board),
+	compile(bbq_gameplay_hard).
+
 
 % ---------------------------------------------------------------------------------- 
 % Predicate- print_board
@@ -38,6 +50,8 @@ print_row([Var|RowRest]) :-
 	print_var(Var),
 	write('|'),
 	print_row(RowRest).
+
+
 
 print_var(b) :- 
 	write(' B '),!.
@@ -145,7 +159,7 @@ game(CurrentBoard) :-
 	% Print current board
 	write('Board: '),nl,nl,
 	print_board(CurrentBoard),
-	write(' -------------------------------------------------------------------------------- '),nl,
+	print_ui_separetor,
 
 	% Print instructions to player
 	write('Please Enter where you would like to place your Q'),nl,
@@ -158,12 +172,15 @@ game(CurrentBoard) :-
 	% otherwise-  if valid play - set the new board accordingly 
 	read(Instruction),
 
-	(handle_command(Instruction),!,
+	(handle_command(Instruction, CurrentBoard),!,
 	 game(CurrentBoard)
 	 ;
 	 % TODO - HANDLE INVALID INPUT !!!!@@@@@@@@@@@@@@ 
-	 place_in_board_index(CurrentBoard, q , Instruction, NewBoard)),
- 	 print_board(NewBoard),nl,nl,
+	 place_in_board_index(CurrentBoard, q , Instruction, NewBoard)
+	 ),
+ 	print_board(NewBoard),
+	print_ui_separetor,
+	nl,nl,
 
 
 	% Computer play , use alpha-beta algorithem to pick the best play,
@@ -174,43 +191,45 @@ game(CurrentBoard) :-
 	Pos = s(player_b, 0, NewBoard),
 	alphabeta(Pos, -999, 999, GoodPos, Value),
 
-	write('DEBUG ~~~~~~~~~~~~~~~~ alpha-beta value is: ~~~~~~~~~~~~~~~~ '),
-	write(Value),nl,
+	%write('DEBUG ~~~~~~~~~~~~~~~~ alpha-beta value is: ~~~~~~~~~~~~~~~~ '),
+	%write(Value),nl,
 	
 	GoodPos = s(_,_, UpdatedBoard),
 	game(UpdatedBoard),!.
 		
 
-	
-	
-	 
+handle_command(help, _) :-
+	nl,write('###########################################################################'),nl,
+	write('#		 			Game Help Menu 					  #'),nl,
+	write('#                                                                         #'),nl,
+	write('# 1. For Help, Enter - help.								  #'),nl,
+	write('# 2. To  Quit, Enter - quit.								  #'),nl,
+	write('# 3. To  Give up Enter - giveup							  #'),nl,
 
-	
+	write('# 4. To Enter your next play - Enter Coordinates in the format:  X/N.	  #'),nl,
+	write('# (X - Row , Y - Column).  X = {a/b/c/d/e/f}, Y = {1/2/3/4/5/6}		  #'),nl,
+	write('#                                                                         #'),nl,
+	write('###########################################################################'),nl,nl,!.
 
 
-
-
-handle_command(help) :-
-	write(' -------- Game Help Menu -------- '),nl,nl,
-
-	write('1. For Help, Enter - help.'),nl,
-	write('2. To  Quit, Enter - quit.'),nl,
-
-	
-	write('3. To Enter your next play - Enter Coordinates in the format:  X/N.   (X - Row , Y - Column)'),nl,
-	write('   X = {a/b/c/d/e/f}, Y = {1/2/3/4/5/6}'),nl.
-	
+announce_winner(CurrentBoard) :- !.
+ 
 
 cumputer_thinking_animation :-
-	write('.'),
-	sleep(500),
-	write('.'),
-	sleep(500),
-	write('.'),
-	sleep(500),
-	nl.
-	
+	write('.'),flush,
+	sleep(600),
+	write('.'),flush,
+	sleep(600),
+	write('.'),flush,
+	sleep(600),
+	write('.'),flush,
+	sleep(600),
+	write('.'),flush,
+	nl,!.
 
+
+print_ui_separetor :-
+	write(' -------------------------------------------------------------------------------- '),nl,!.
 
 handle_command(quit) :-
 	abort.

@@ -140,6 +140,16 @@ Board = b(6,[[b,b,q,n,n,n],[b,n,n,n,b,n],[b,n,n,n,n,n],[n,n,n,n,n,q],[n,n,n,q,q,
 Pos = s(player_q, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([NextPos]).
 
 
+Board = b(6,[[q,q,b,n,n,n],[q,n,n,n,q,n],[q,n,n,n,n,n],[n,n,n,n,n,b],[n,n,n,b,b,b],[n,n,n,n,n,n]]),
+Pos = s(player_b, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([NextPos]).
+
+
+
+
+
+Board = b(6,[[q,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]),
+Pos = s(player_b, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([NextPos]).
+
 
 ----> MOVES:
 
@@ -152,13 +162,14 @@ Pos = s(player_q, 0, Board), moves(Pos, PosList), print_positions(PosList).
 /*
 		ALPHA-BETA TESTS !!!!!!!!!!!!!
 
-Board = b(6,[[b,b,q,n,n,n],[b,n,n,n,b,n],[b,n,n,n,n,n],[n,n,n,n,n,q],[n,n,n,q,q,q],[n,n,n,n,n,n]]),
-Pos = s(player_q, 0, Board),
+Board = b(6,[[q,q,b,n,n,n],[q,n,n,n,q,n],[q,n,n,n,n,n],[n,n,n,n,n,b],[n,n,n,b,b,b],[n,n,n,n,n,n]]),
+Pos = s(player_b, 0, Board),
 alphabeta(Pos, -999, 999, GoodPos, Value).
 
 
 
 
+Pos = s(player_b, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([NextPos]).
 
 */
 
