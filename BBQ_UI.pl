@@ -128,10 +128,92 @@ print_n_times(ToPrint, N) :-
 
 
 
+% -----------------------------------------------------------------------------------------------------------------
+% 								 Gameplay UI Predicates  							 
+% -----------------------------------------------------------------------------------------------------------------
 
 
 
 
+start_game :-
+	EmptyBoard = b(6,[[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]),
+	game(EmptyBoard),!.
+
+
+game(CurrentBoard) :-
+	
+	% Print current board
+	write('Board: '),nl,nl,
+	print_board(CurrentBoard),
+	write(' -------------------------------------------------------------------------------- '),nl,
+
+	% Print instructions to player
+	write('Please Enter where you would like to place your Q'),nl,
+	write('For any other instructions, please enter the relevent command. type: "help" For help'),nl,
+
+	
+	
+	% Read the user next instruction
+	% If special instruction - handle accordingly 
+	% otherwise-  if valid play - set the new board accordingly 
+	read(Instruction),
+
+	(handle_command(Instruction),!,
+	 game(CurrentBoard)
+	 ;
+	 % TODO - HANDLE INVALID INPUT !!!!@@@@@@@@@@@@@@ 
+	 place_in_board_index(CurrentBoard, q , Instruction, NewBoard)),
+ 	 print_board(NewBoard),nl,nl,
+
+
+	% Computer play , use alpha-beta algorithem to pick the best play,
+	% Print this play and start another loop..
+	write('Computer Turn ! ...'),nl,nl,
+	cumputer_thinking_animation,
+
+	Pos = s(player_b, 0, NewBoard),
+	alphabeta(Pos, -999, 999, GoodPos, Value),
+
+	write('DEBUG ~~~~~~~~~~~~~~~~ alpha-beta value is: ~~~~~~~~~~~~~~~~ '),
+	write(Value),nl,
+	
+	GoodPos = s(_,_, UpdatedBoard),
+	game(UpdatedBoard),!.
+		
+
+	
+	
+	 
+
+	
+
+
+
+
+handle_command(help) :-
+	write(' -------- Game Help Menu -------- '),nl,nl,
+
+	write('1. For Help, Enter - help.'),nl,
+	write('2. To  Quit, Enter - quit.'),nl,
+
+	
+	write('3. To Enter your next play - Enter Coordinates in the format:  X/N.   (X - Row , Y - Column)'),nl,
+	write('   X = {a/b/c/d/e/f}, Y = {1/2/3/4/5/6}'),nl.
+	
+
+cumputer_thinking_animation :-
+	write('.'),
+	sleep(500),
+	write('.'),
+	sleep(500),
+	write('.'),
+	sleep(500),
+	nl.
+	
+
+
+handle_command(quit) :-
+	abort.
 
 
 
