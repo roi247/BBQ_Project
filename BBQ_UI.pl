@@ -1,5 +1,5 @@
 % -----------------------------------------------------------------------------------------------------------------
-% 								 UI Predicates  								 
+% 								 Gameplay UI Predicates  							 
 % -----------------------------------------------------------------------------------------------------------------
 
 % ---------------------------------------------------------------------------------- 
@@ -13,6 +13,159 @@ compile_all :-
 	compile(bbq_tests),
 	compile(bbq_board),
 	compile(bbq_gameplay_hard).
+
+
+% ---------------------------------------------------------------------------------- 
+% Predicate- start_game
+% Summary  - start the game main flow with a new board
+% ---------------------------------------------------------------------------------- 
+start_game :-
+	EmptyBoard = b(6,[[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]),
+	%TODO - REMOVE : EmptyBoard = b(6,[[b,b,q,b,b,q],[b,b,b,q,q,q],[b,q,n,q,b,q],[b,b,b,b,q,q],[b,b,b,b,q,q],[b,q,q,b,b,q]]),
+	game(EmptyBoard),!.
+
+
+% ---------------------------------------------------------------------------------- 
+% Predicate- game
+% Summary  - Main flow of the game : read input, play the next move or handle any special command
+%		 and continue with that procedure untill the game is over
+% ---------------------------------------------------------------------------------- 
+game(CurrentBoard) :-
+	
+	% Print current board
+	write('Board: '),nl,nl,
+	print_board(CurrentBoard),
+	print_ui_separetor,
+
+	% Check if game is over and annouce winner if so
+	(game_over(CurrentBoard),!,announce_winner(CurrentBoard); true),
+
+	% Print instructions to player
+	write('Please Enter where you would like to place your Q'),nl,
+	write('For any other instructions, please enter the relevent command. type: "help" For help'),nl,
+
+	% Read the user next instruction
+	% If special instruction - handle accordingly 
+	% otherwise-  if valid play - set the new board accordingly 
+	write('---> '), read(Instruction),
+
+	(handle_command(Instruction, CurrentBoard),!, game(CurrentBoard)
+	 ;
+	 place_in_board_index(CurrentBoard, q , Instruction, NewBoard),!
+	 ;
+	 write('********** INVALID INPUT! .Invalid Board Coordinates / invalid command entered **********'),nl,
+	 cumputer_thinking_animation, game(CurrentBoard)
+	 ),
+ 	print_board(NewBoard), print_ui_separetor, nl, nl,
+	
+	% Check if game is over and annouce winner if so
+	(game_over(NewBoard),!,announce_winner(NewBoard); true),
+
+
+	% Computer play , use alpha-beta algorithem to pick the best play,
+	% Print this play and start another loop..
+	write('***	Computer Turn!	***'),nl,nl,
+	cumputer_thinking_animation,
+
+	Pos = s(player_b, 0, NewBoard),
+	alphabeta(Pos, -999, 999, GoodPos, Value),	
+	GoodPos = s(_,_, UpdatedBoard),
+	game(UpdatedBoard),!.
+	
+
+% ---------------------------------------------------------------------------------- 	
+% Predicate- handle_command										 	
+% Summary  - handle all the sorts of special commands in the game (help/quit/giveup etc..)
+% ---------------------------------------------------------------------------------- 	
+handle_command(help, _) :-
+	nl,write('###########################################################################'),nl,
+	write('#		 			Game Help Menu 					  #'),nl,
+	write('#                                                                         #'),nl,
+	write('# 1. For Help, Enter - help.								  #'),nl,
+	write('# 2. To  Quit, Enter - quit.								  #'),nl,
+	write('# 3. To  Give up Enter - giveup.							  #'),nl,
+
+	write('# 4. To Enter your next play - Enter Coordinates in the format:  X/N.	  #'),nl,
+	write('# (X - Row , Y - Column).  X = {a/b/c/d/e/f}, Y = {1/2/3/4/5/6}		  #'),nl,
+	write('#                                                                         #'),nl,
+	write('###########################################################################'),nl,nl,!.
+
+
+handle_command(giveup, CurrentBoard) :-
+	announce_winner(CurrentBoard).
+
+handle_command(quit, _) :-
+	abort.
+
+
+
+% ---------------------------------------------------------------------------------- 
+% Predicate- announce_winner
+% Summary  - print cool UI game over animation. announce who is the winner (or tie)
+% ---------------------------------------------------------------------------------- 
+
+announce_winner(CurrentBoard) :-
+	nl,
+	write(' ______________________________________________________________'),nl,
+	write(' ______________________________________________________________'),nl,nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||	'),write(' __ _  __ _ _ __ ___   ___    _____   _____ _ __       ||'),nl,
+	write(' ||	'),write('  / _  |/ _| | |_ | _ \ / _ \  / _ \ \ / / _ \ .__| 	 ||'),nl,
+	write(' ||	'),write(' | (_| | (_| | | | | | |  __/ | (_) \ V /  __/ |   	 ||'),nl,
+	write(' ||	'),write('  \__, |\__,_|_| |_| |_|\___|  \___/ \_/ \___|_|   	 ||'),nl,
+	write(' ||	'),write('   __/ |                                           	 ||'),nl,
+	write(' ||	'),write('  |___/  								 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+
+	game_winner(CurrentBoard, Winner),
+	(Winner = player_b,!,
+	 write(' ||  Winner is .............. Player B !!!!!!!!		       ||'),nl
+	 ; 
+	 Winner = player_q,!,
+	 write(' ||  Winner is .............. Player Q !!!!!!!!			 ||'),nl
+	 ; 
+	 Winner = tie,!,
+	 write(' ||  Game has ended with a TIE  !!!!!!!!!!!!!!			 ||'),nl
+	),
+	
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ______________________________________________________________'),nl,
+	write(' ______________________________________________________________'),nl,nl,
+	abort.
+	
+
+	
+% ---------------------------------------------------------------------------------- 
+% Predicate- cumputer_thinking_animation
+% Summary  - prints some dots and sleeps a bit, make it look like the computer is 
+%		 thinking about the next movment
+% ---------------------------------------------------------------------------------- 
+cumputer_thinking_animation :-
+	write('.'),flush,
+	sleep(600),
+	write('.'),flush,
+	sleep(600),
+	write('.'),flush,
+	sleep(700),
+	write('.'),flush,
+	sleep(700),
+	write('.'),flush,
+	nl,!.
+
+
+
+print_ui_separetor :-
+	write(' -------------------------------------------------------------------------------- '),nl,!.
+
+
+% -----------------------------------------------------------------------------------------------------------------
+% 								 Aux UI Predicates  								 
+% -----------------------------------------------------------------------------------------------------------------
 
 
 % ---------------------------------------------------------------------------------- 
@@ -140,144 +293,6 @@ print_n_times(ToPrint, N) :-
 	print_n_times(ToPrint, N1).
 
 
-
-
-% -----------------------------------------------------------------------------------------------------------------
-% 								 Gameplay UI Predicates  							 
-% -----------------------------------------------------------------------------------------------------------------
-
-
-
-
-start_game :-
-	%EmptyBoard = b(6,[[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]),
-	EmptyBoard = b(6,[[b,b,q,b,n,n],[b,b,b,n,q,q],[b,q,q,q,b,n],[n,n,n,n,q,q],[b,b,b,b,q,q],[n,q,q,b,b,q]]),
-	game(EmptyBoard),!.
-
-
-game(CurrentBoard) :-
-
-	% First check if game is over
-	(game_over(CurrentBoard),!,
-	 game_winner(CurrentBoard, Winner), announce_winner(Winner); true),
-
-	
-	% Print current board
-	write('Board: '),nl,nl,
-	print_board(CurrentBoard),
-	print_ui_separetor,
-
-	% Print instructions to player
-	write('Please Enter where you would like to place your Q'),nl,
-	write('For any other instructions, please enter the relevent command. type: "help" For help'),nl,
-
-	
-	
-	% Read the user next instruction
-	% If special instruction - handle accordingly 
-	% otherwise-  if valid play - set the new board accordingly 
-	read(Instruction),
-
-	(handle_command(Instruction, CurrentBoard),!, game(CurrentBoard)
-	 ;
-	 place_in_board_index(CurrentBoard, q , Instruction, NewBoard)
-	 ),
- 	print_board(NewBoard),
-	print_ui_separetor,
-	nl,nl,
-	
-	% Check if it was the last step and the game is over
-	(game_over(NewBoard),!,
-	 game_winner(NewBoard, Winner), announce_winner(Winner); true),
-
-
-	% Computer play , use alpha-beta algorithem to pick the best play,
-	% Print this play and start another loop..
-	write('***	Computer Turn!	***'),nl,nl,
-	cumputer_thinking_animation,
-
-	Pos = s(player_b, 0, NewBoard),
-	alphabeta(Pos, -999, 999, GoodPos, Value),
-
-	%write('DEBUG ~~~~~~~~~~~~~~~~ alpha-beta value is: ~~~~~~~~~~~~~~~~ '),
-	%write(Value),nl,
-	
-	GoodPos = s(_,_, UpdatedBoard),
-	game(UpdatedBoard),!.
-		
-
-handle_command(help, _) :-
-	nl,write('###########################################################################'),nl,
-	write('#		 			Game Help Menu 					  #'),nl,
-	write('#                                                                         #'),nl,
-	write('# 1. For Help, Enter - help.								  #'),nl,
-	write('# 2. To  Quit, Enter - quit.								  #'),nl,
-	write('# 3. To  Give up Enter - giveup							  #'),nl,
-
-	write('# 4. To Enter your next play - Enter Coordinates in the format:  X/N.	  #'),nl,
-	write('# (X - Row , Y - Column).  X = {a/b/c/d/e/f}, Y = {1/2/3/4/5/6}		  #'),nl,
-	write('#                                                                         #'),nl,
-	write('###########################################################################'),nl,nl,!.
-
-
-announce_winner(CurrentBoard) :-
-	nl,
-	write(' ______________________________________________________________'),nl,
-	write(' ______________________________________________________________'),nl,nl,
-	write(' ||		 					  	 		 ||'),nl,
-	write(' ||	'),write(' __ _  __ _ _ __ ___   ___    _____   _____ _ __       ||'),nl,
-	write(' ||	'),write('  / _  |/ _| | |_ | _ \ / _ \  / _ \ \ / / _ \ .__| 	 ||'),nl,
-	write(' ||	'),write(' | (_| | (_| | | | | | |  __/ | (_) \ V /  __/ |   	 ||'),nl,
-	write(' ||	'),write('  \__, |\__,_|_| |_| |_|\___|  \___/ \_/ \___|_|   	 ||'),nl,
-	write(' ||	'),write('   __/ |                                           	 ||'),nl,
-	write(' ||	'),write('  |___/  								 ||'),nl,
-	write(' ||		 					  	 		 ||'),nl,
-	write(' ||		 					  	 		 ||'),nl,
-
-	game_winner(CurrentBoard, Winner),
-	(Winner = player_b,!,
-	 write(' ||  Winner is .............. Player B !!!!!!!!		       ||'),nl
-	 ; 
-	 Winner = player_q,!,
-	 write(' ||  Winner is .............. Player Q !!!!!!!!			 ||'),nl
-	 ; 
-	 Winner = tie,!,
-	 write(' ||  Game has ended with a TIE  !!!!!!!!!!!!!!			 ||'),nl
-	),
-	
-	write(' ||		 					  	 		 ||'),nl,
-	write(' ||		 					  	 		 ||'),nl,
-	write(' ||		 					  	 		 ||'),nl,
-	write(' ||		 					  	 		 ||'),nl,
-	write(' ||		 					  	 		 ||'),nl,
-	write(' ______________________________________________________________'),nl,
-	write(' ______________________________________________________________'),nl,nl,
-	abort.
-	
-
-	
-
-
-
-
-cumputer_thinking_animation :-
-	write('.'),flush,
-	sleep(600),
-	write('.'),flush,
-	sleep(600),
-	write('.'),flush,
-	sleep(600),
-	write('.'),flush,
-	sleep(600),
-	write('.'),flush,
-	nl,!.
-
-
-print_ui_separetor :-
-	write(' -------------------------------------------------------------------------------- '),nl,!.
-
-handle_command(quit) :-
-	abort.
 
 
 
