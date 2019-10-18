@@ -150,11 +150,17 @@ print_n_times(ToPrint, N) :-
 
 
 start_game :-
-	EmptyBoard = b(6,[[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]),
+	%EmptyBoard = b(6,[[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]),
+	EmptyBoard = b(6,[[b,b,q,b,n,n],[b,b,b,n,q,q],[b,q,q,q,b,n],[n,n,n,n,q,q],[b,b,b,b,q,q],[n,q,q,b,b,q]]),
 	game(EmptyBoard),!.
 
 
 game(CurrentBoard) :-
+
+	% First check if game is over
+	(game_over(CurrentBoard),!,
+	 game_winner(CurrentBoard, Winner), announce_winner(Winner); true),
+
 	
 	% Print current board
 	write('Board: '),nl,nl,
@@ -172,20 +178,22 @@ game(CurrentBoard) :-
 	% otherwise-  if valid play - set the new board accordingly 
 	read(Instruction),
 
-	(handle_command(Instruction, CurrentBoard),!,
-	 game(CurrentBoard)
+	(handle_command(Instruction, CurrentBoard),!, game(CurrentBoard)
 	 ;
-	 % TODO - HANDLE INVALID INPUT !!!!@@@@@@@@@@@@@@ 
 	 place_in_board_index(CurrentBoard, q , Instruction, NewBoard)
 	 ),
  	print_board(NewBoard),
 	print_ui_separetor,
 	nl,nl,
+	
+	% Check if it was the last step and the game is over
+	(game_over(NewBoard),!,
+	 game_winner(NewBoard, Winner), announce_winner(Winner); true),
 
 
 	% Computer play , use alpha-beta algorithem to pick the best play,
 	% Print this play and start another loop..
-	write('Computer Turn ! ...'),nl,nl,
+	write('***	Computer Turn!	***'),nl,nl,
 	cumputer_thinking_animation,
 
 	Pos = s(player_b, 0, NewBoard),
@@ -212,8 +220,45 @@ handle_command(help, _) :-
 	write('###########################################################################'),nl,nl,!.
 
 
-announce_winner(CurrentBoard) :- !.
- 
+announce_winner(CurrentBoard) :-
+	nl,
+	write(' ______________________________________________________________'),nl,
+	write(' ______________________________________________________________'),nl,nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||	'),write(' __ _  __ _ _ __ ___   ___    _____   _____ _ __       ||'),nl,
+	write(' ||	'),write('  / _  |/ _| | |_ | _ \ / _ \  / _ \ \ / / _ \ .__| 	 ||'),nl,
+	write(' ||	'),write(' | (_| | (_| | | | | | |  __/ | (_) \ V /  __/ |   	 ||'),nl,
+	write(' ||	'),write('  \__, |\__,_|_| |_| |_|\___|  \___/ \_/ \___|_|   	 ||'),nl,
+	write(' ||	'),write('   __/ |                                           	 ||'),nl,
+	write(' ||	'),write('  |___/  								 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+
+	game_winner(CurrentBoard, Winner),
+	(Winner = player_b,!,
+	 write(' ||  Winner is .............. Player B !!!!!!!!		       ||'),nl
+	 ; 
+	 Winner = player_q,!,
+	 write(' ||  Winner is .............. Player Q !!!!!!!!			 ||'),nl
+	 ; 
+	 Winner = tie,!,
+	 write(' ||  Game has ended with a TIE  !!!!!!!!!!!!!!			 ||'),nl
+	),
+	
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ||		 					  	 		 ||'),nl,
+	write(' ______________________________________________________________'),nl,
+	write(' ______________________________________________________________'),nl,nl,
+	abort.
+	
+
+	
+
+
+
 
 cumputer_thinking_animation :-
 	write('.'),flush,

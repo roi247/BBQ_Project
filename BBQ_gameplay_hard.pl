@@ -27,14 +27,9 @@ compile_all :-
 % Board = b(Size, Rows)
 % ---------------------------
 
+% MAX - player_q
+% MIN - player_b
 
-/*
-
-MAX - player_q
-MIN - player_b
-
-
-*/
 
 
 % ---------------------------------------------------------------------------------- 
@@ -43,6 +38,21 @@ MIN - player_b
 % ---------------------------------------------------------------------------------- 
 
 
+game_winner(Board, Winner) :-
+	board_longest_line(Board, q, _, Q_LineLength),
+	board_longest_line(Board, b, _, B_LineLength),
+
+	(Q_LineLength > B_LineLength,!,
+	 Winner = player_q
+	;
+	 B_LineLength > Q_LineLength,!,
+	 Winner = player_b
+	;
+	 Q_LineLength =:= B_LineLength,!,
+	 Winner = tie
+	).
+	
+	
 
 opposite_player(player_b, player_q) :- !.
 opposite_player(player_q, player_b) :- !.
@@ -67,7 +77,11 @@ move(Pos, NextPos) :-
 
 
 stop_search(s(_, Depth, Board)) :- 
-	(Depth >= 1 ; board_empty_spots_left(Board, 0)),!.
+	(Depth >= 1 ; game_over(Board)),!.
+
+
+game_over(Board) :-
+	board_empty_spots_left(Board, 0),!.
 
 
 moves(Pos, PosList):-
