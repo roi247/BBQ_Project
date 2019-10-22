@@ -47,7 +47,7 @@ min_to_move(s(player_b,_,_)).
 % Summary  -   stops the alpha-beta serch if depth requires is reached or if the game is over
 % ----------------------------------------------------------------------------------
 stop_search(s(_, Depth, Board)) :- 
-	(Depth >= 2 ; game_over(Board)),!.
+	(Depth >= 1 ; game_over(Board)),!.
 
 
 game_over(Board) :-
@@ -64,10 +64,8 @@ game_over(Board) :-
 %	For player Q: Factor_Q - Factor_B										
 %	For player B: -(Factor_B - Factor_Q)									
 %																
-%	Factor is the player current longest row TIMES the potential maxmimum line that can be achived 
-%			 													
-%	Factor_X = PlayerX_longest_line * (PlayerX_longest_line + PlayerX_potential_empty_spots_left)
-%		 														
+%	Factor is the player current longest row			 						
+%	Factor_X = PlayerX_longest_line 		 								
 %		 														
 % ----------------------------------------------------------------------------------		
 staticval(Pos, Val):-
@@ -75,13 +73,11 @@ staticval(Pos, Val):-
 	Board = b(Size, Rows),
 
 	board_longest_line(Board, q, Q_LongestLine, Q_LineLength),
-	row_potential_spots_left(Q_LongestLine, q, Q_SpotsLeftCount),
 
 	board_longest_line(Board, b, B_LongestLine, B_LineLength),
-	row_potential_spots_left(B_LongestLine, b, B_SpotsLeftCount),
 
-	Factor_Q is (Q_LineLength * (Q_LineLength + Q_SpotsLeftCount)),
-	Factor_B is (B_LineLength * (B_LineLength + B_SpotsLeftCount)),
+	Factor_Q is (Q_LineLength),
+	Factor_B is (B_LineLength),
 
 	(Player = player_q,!,
 	 Val is Factor_Q - Factor_B

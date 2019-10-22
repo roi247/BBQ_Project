@@ -137,18 +137,24 @@ print_positions([Pos|OtherPositions]) :-
 		------------- Move Tests ----------------
 
 Board = b(6,[[b,b,q,n,n,n],[b,n,n,n,b,n],[b,n,n,n,n,n],[n,n,n,n,n,q],[n,n,n,q,q,q],[n,n,n,n,n,n]]),
-Pos = s(player_q, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([NextPos]).
+Pos = s(player_q, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([Pos]),nl,nl, print_positions([NextPos]).
 
 
 Board = b(6,[[q,q,b,n,n,n],[q,n,n,n,q,n],[q,n,n,n,n,n],[n,n,n,n,n,b],[n,n,n,b,b,b],[n,n,n,n,n,n]]),
-Pos = s(player_b, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([NextPos]).
+Pos = s(player_b, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([Pos]),nl,nl, print_positions([NextPos]).
+
+
+
+
+Board = b(6,[[q,q,n,n,n,n],[q,n,n,n,n,n],[q,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[q,q,b,b,b,b]]),
+Pos = s(player_b, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([Pos]),nl,nl, print_positions([NextPos]).
 
 
 
 
 
 Board = b(6,[[q,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n],[n,n,n,n,n,n]]),
-Pos = s(player_b, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([NextPos]).
+Pos = s(player_b, 0, Board), move(Pos, NextPos), staticval(NextPos, Value), print_positions([Pos]),nl,nl, print_positions([NextPos]).
 
 
 ----> MOVES:

@@ -47,7 +47,7 @@ min_to_move(s(player_b,_,_)).
 % Summary  -   stops the alpha-beta serch if depth requires is reached or if the game is over
 % ----------------------------------------------------------------------------------
 stop_search(s(_, Depth, Board)) :- 
-	(Depth >= 2 ; game_over(Board)),!.
+	(Depth >= 1 ; game_over(Board)),!.
 
 
 game_over(Board) :-
