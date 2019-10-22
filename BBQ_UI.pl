@@ -45,10 +45,8 @@ game(CurrentBoard) :-
 	write('For any other instructions, please enter the relevent command. type: "help" For help'),nl,
 
 	% Read the user next instruction
-	% If special instruction - handle accordingly 
-	% otherwise-  if valid play - set the new board accordingly 
+	% If special instruction - handle accordingly. If valid play- set the new board accordingly 
 	write('---> '), read(Instruction),
-
 	(handle_command(Instruction, CurrentBoard),!, game(CurrentBoard)
 	 ;
 	 place_in_board_index(CurrentBoard, q , Instruction, NewBoard),!
@@ -56,6 +54,7 @@ game(CurrentBoard) :-
 	 write('********** INVALID INPUT! .Invalid Board Coordinates / invalid command entered **********'),nl,
 	 cumputer_thinking_animation, game(CurrentBoard)
 	 ),
+
  	print_board(NewBoard), print_ui_separetor, nl, nl,
 	
 	% Check if game is over and annouce winner if so

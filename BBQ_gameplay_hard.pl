@@ -1,67 +1,24 @@
-
-% -----------------------------------------------------------------------------------------------------------------
-% 								 Related Predicates  								 
-% -----------------------------------------------------------------------------------------------------------------
-
-cl :- compile_all,!.
-
-compile_all :-
-	compile(bbq_aux),
-	compile(bbq_board),
-	compile(bbq_tests),
-
-	compile(bbq_ui).
-	%compile(bbq_gameplay_hard).
-
-
 % -----------------------------------------------------------------------------------------------------------------
 % 								 Game Predicates  								 
 % -----------------------------------------------------------------------------------------------------------------
 
 % ---------------------------
-% Game State Format :
-% s(Player, Depth, Board)
-%
+% Game State Format :		
+% s(Player, Depth, Board)	
+%					
 % Player = player_b / player_q
-% Depth = current search depth 
-% Board = b(Size, Rows)
-% ---------------------------
+% Depth = current search depth
+% Board = b(Size, Rows)		
+% --------------------------- 
 
 % MAX - player_q
 % MIN - player_b
 
 
-
 % ---------------------------------------------------------------------------------- 
-% Predicate- 
-% Summary  - 
+% Predicates-  move, staticval, max_to_move, min_to_move
+% Summary  - implementation of abstract alpha-beta algorithem predactes
 % ---------------------------------------------------------------------------------- 
-
-
-game_winner(Board, Winner) :-
-	board_longest_line(Board, q, _, Q_LineLength),
-	board_longest_line(Board, b, _, B_LineLength),
-
-	(Q_LineLength > B_LineLength,!,
-	 Winner = player_q
-	;
-	 B_LineLength > Q_LineLength,!,
-	 Winner = player_b
-	;
-	 Q_LineLength =:= B_LineLength,!,
-	 Winner = tie
-	).
-	
-	
-
-opposite_player(player_b, player_q) :- !.
-opposite_player(player_q, player_b) :- !.
-
-
-player_sign(player_b, b) :- !.
-player_sign(player_q, q) :- !.
-
-
 move(Pos, NextPos) :- 
 	Pos = s(Player, Depth, Board),
 	player_sign(Player, Sign),	
@@ -75,15 +32,6 @@ move(Pos, NextPos) :-
 	Depth1 is Depth + 1,
 	NextPos = s(OppositePlayer, Depth1 , NewBoard1).
 
-
-stop_search(s(_, Depth, Board)) :- 
-	(Depth >= 1 ; game_over(Board)),!.
-
-
-game_over(Board) :-
-	board_empty_spots_left(Board, 0),!.
-
-
 moves(Pos, PosList):-
 	not(stop_search(Pos)),
 	bagof(Pos1, move(Pos,Pos1), PosList).
@@ -92,6 +40,18 @@ moves(Pos, PosList):-
 max_to_move(s(player_q,_,_)).
 
 min_to_move(s(player_b,_,_)).
+
+
+% ---------------------------------------------------------------------------------- 
+% Predicates-  stop_search
+% Summary  -   stops the alpha-beta serch if depth requires is reached or if the game is over
+% ----------------------------------------------------------------------------------
+stop_search(s(_, Depth, Board)) :- 
+	(Depth >= 1 ; game_over(Board)),!.
+
+
+game_over(Board) :-
+	board_empty_spots_left(Board, 0),!.
 
 
 % ---------------------------------------------------------------------------------- 		
@@ -171,15 +131,35 @@ betterof( Pos, Val, Pos1, Val1, Pos, Val)  :-        % Pos better than Pos1
 betterof( _, _, Pos1, Val1, Pos1, Val1).             % Otherwise Pos1 better
 
 
+% -----------------------------------------------------------------------------------------------------------------
+% 								Auxilliary Predicates  								 
+% -----------------------------------------------------------------------------------------------------------------
 
 
+% ---------------------------------------------------------------------------------- 
+% Predicate- game_winner
+% Summary  - Returns who is the winner acording to the game board. or tie if it's a tie
+% ---------------------------------------------------------------------------------- 
+game_winner(Board, Winner) :-
+	board_longest_line(Board, q, _, Q_LineLength),
+	board_longest_line(Board, b, _, B_LineLength), 
+
+	(Q_LineLength > B_LineLength,!,
+	 Winner = player_q
+	;
+	 B_LineLength > Q_LineLength,!,
+	 Winner = player_b
+	;
+	 Q_LineLength =:= B_LineLength,!,
+	 Winner = tie
+	).
+
+opposite_player(player_b, player_q) :- !.
+opposite_player(player_q, player_b) :- !.
 
 
-
-
-
-
-
+player_sign(player_b, b) :- !.
+player_sign(player_q, q) :- !.
 
 
 
